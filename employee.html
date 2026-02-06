@@ -1,0 +1,787 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>بوابة الموظف — نظام الدوام والرواتب</title>
+<style>
+:root{
+  --bg:#0b1220;
+  --card:#0f1a30;
+  --card2:#101f3a;
+  --text:#eaf0ff;
+  --muted:#a8b3d6;
+  --line:rgba(255,255,255,.10);
+  --green:#22c55e;
+  --green2:#16a34a;
+  --red:#ef4444;
+  --amber:#f59e0b;
+  --blue:#60a5fa;
+  --shadow: 0 12px 30px rgba(0,0,0,.35);
+  --radius:18px;
+  --radius2:14px;
+  --pad:14px;
+  --font: system-ui, -apple-system, "Segoe UI", Tahoma, Arial, "Noto Kufi Arabic", "Noto Sans Arabic", sans-serif;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:var(--font);
+  background: radial-gradient(1200px 600px at 80% -10%, rgba(34,197,94,.25), transparent 55%),
+              radial-gradient(1000px 500px at 20% 0%, rgba(96,165,250,.20), transparent 55%),
+              linear-gradient(180deg, #070b14 0%, #0b1220 60%, #070b14 100%);
+  color:var(--text);
+  direction:rtl;
+}
+
+a{color:inherit}
+.container{max-width:1100px;margin:0 auto;padding:18px}
+.card{
+  background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+  border:1px solid var(--line);
+  box-shadow:var(--shadow);
+  border-radius:var(--radius);
+  padding:var(--pad);
+  backdrop-filter: blur(8px);
+}
+.card + .card{margin-top:14px}
+.row{display:flex;gap:12px;flex-wrap:wrap}
+.col{flex:1 1 260px;min-width:240px}
+
+.hdr{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:14px 16px;
+  position:sticky;top:0;z-index:50;
+  background: rgba(7,11,20,.65);
+  backdrop-filter: blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.brand{
+  display:flex;align-items:center;gap:10px;min-width:0
+}
+.brand .logo{
+  width:40px;height:40px;border-radius:12px;overflow:hidden;
+  background: rgba(255,255,255,.06);
+  border:1px solid var(--line);
+  display:grid;place-items:center;flex:0 0 auto
+}
+.brand .logo img{width:100%;height:100%;object-fit:cover}
+.brand .title{display:flex;flex-direction:column;min-width:0}
+.brand .title b{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand .title span{font-size:12px;color:var(--muted)}
+.badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:6px 10px;border-radius:999px;border:1px solid var(--line);
+  background: rgba(255,255,255,.05);
+  font-size:12px;color:var(--muted)
+}
+
+.tabs{
+  display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 0;
+  position:sticky;top:78px;z-index:40;
+  padding-bottom:8px;background: rgba(7,11,20,.35);backdrop-filter: blur(10px);
+}
+.tab{
+  border:1px solid var(--line);
+  background: rgba(255,255,255,.04);
+  color:var(--muted);
+  padding:10px 12px;border-radius:999px;
+  font-size:13px;cursor:pointer;user-select:none;
+  transition: transform .08s ease, background .15s ease, color .15s ease;
+}
+.tab:active{transform:scale(.98)}
+.tab.active{
+  background: rgba(34,197,94,.18);
+  border-color: rgba(34,197,94,.40);
+  color:var(--text);
+}
+.section{display:none}
+.section.active{display:block}
+
+label{display:block;font-size:12px;color:var(--muted);margin:10px 0 6px}
+input,select,textarea{
+  width:100%;
+  padding:12px 12px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.14);
+  background: rgba(15,26,48,.60);
+  color:var(--text);
+  outline:none;
+}
+input::placeholder, textarea::placeholder{color:rgba(168,179,214,.65)}
+textarea{min-height:90px;resize:vertical}
+
+.btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.btn{
+  border:1px solid transparent;
+  background: rgba(255,255,255,.08);
+  color:var(--text);
+  padding:11px 14px;border-radius:14px;
+  font-size:14px;cursor:pointer;user-select:none;
+  display:inline-flex;align-items:center;gap:10px;
+  transition: transform .08s ease, filter .15s ease, background .15s ease, border-color .15s ease;
+}
+.btn:active{transform:scale(.98)}
+.btn.primary{background: linear-gradient(180deg, rgba(34,197,94,.95), rgba(22,163,74,.85));}
+.btn.primary:hover{filter:brightness(1.06)}
+.btn.danger{background: rgba(239,68,68,.18);border-color: rgba(239,68,68,.35)}
+.btn.ghost{background: rgba(255,255,255,.04);border-color: rgba(255,255,255,.10)}
+.btn.small{padding:8px 10px;border-radius:12px;font-size:12px}
+
+.hr{height:1px;background:var(--line);margin:14px 0}
+.kpi{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+  border:1px solid var(--line);
+  background: rgba(255,255,255,.04);
+  border-radius:var(--radius2);
+  padding:12px 12px;
+}
+.kpi b{font-size:14px}
+.kpi span{font-size:12px;color:var(--muted)}
+.kpi .v{font-size:18px;margin-top:4px}
+
+.tableWrap{overflow:auto;border-radius:14px;border:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;min-width:720px;background: rgba(15,26,48,.45)}
+th,td{padding:10px 10px;border-bottom:1px solid rgba(255,255,255,.08);font-size:13px;vertical-align:top}
+th{position:sticky;top:0;background: rgba(7,11,20,.75);backdrop-filter: blur(8px);text-align:right;color:var(--muted);font-weight:600}
+tr:hover td{background: rgba(255,255,255,.03)}
+
+.toast{
+  position:fixed;inset:auto 14px 14px 14px;z-index:999;
+  display:flex;flex-direction:column;gap:8px;pointer-events:none
+}
+.toast .t{
+  pointer-events:auto;
+  padding:12px 12px;border-radius:14px;border:1px solid var(--line);
+  background: rgba(7,11,20,.70);backdrop-filter: blur(10px);
+  box-shadow:var(--shadow);
+  display:flex;justify-content:space-between;gap:10px;align-items:flex-start
+}
+.toast .t.ok{border-color: rgba(34,197,94,.35)}
+.toast .t.err{border-color: rgba(239,68,68,.35)}
+.toast .t b{font-size:13px}
+.toast .t span{font-size:12px;color:var(--muted)}
+.toast .t button{
+  background:transparent;border:0;color:var(--muted);cursor:pointer;font-size:16px;line-height:1
+}
+
+.footerNote{color:var(--muted);font-size:12px;line-height:1.7}
+.pill{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:7px 10px;border-radius:999px;
+  border:1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.04);
+  color:var(--muted);font-size:12px
+}
+
+@media (min-width:900px){
+  .hdr{padding:16px 22px}
+  .container{padding:22px}
+  .tabs{top:82px}
+}
+
+@media print{
+  body{background:#fff;color:#000}
+  .noPrint{display:none !important}
+  .card{box-shadow:none;border-color:#ddd;background:#fff}
+  table{background:#fff}
+  th{background:#f3f4f6;color:#111}
+  td,th{border-bottom:1px solid #ddd}
+}
+</style>
+</head>
+<body>
+  <div class="hdr noPrint">
+    <div class="brand">
+      <div class="logo" data-company-logo></div>
+      <div class="title">
+        <b data-company-name>—</b>
+        <span>بوابة الموظف (عرض فقط)</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <span class="badge" data-role>Employee</span>
+      <button class="btn ghost small" id="logoutBtn">خروج</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <div class="row">
+        <div class="col">
+          <div class="pill">👤 بيانات الموظف</div>
+          <div class="kpi" style="margin-top:10px">
+            <div>
+              <b id="empName">—</b>
+              <div><span id="empMeta">—</span></div>
+            </div>
+            <div class="v">🧾</div>
+          </div>
+
+          <label>اختر الشهر</label>
+          <select id="ymSel"></select>
+
+          <div class="btns">
+            <button class="btn primary" id="printBtn">طباعة / حفظ صك القبض PDF</button>
+          </div>
+
+          <div class="footerNote" style="margin-top:10px">
+            يمكن عرض الشهر الحالي + شهر سابق واحد فقط.
+          </div>
+        </div>
+
+        <div class="col">
+          <div class="pill">📌 مجاميع الشهر</div>
+          <div class="row" style="margin-top:10px">
+            <div class="col">
+              <div class="kpi">
+                <div><b>الإضافي</b><div><span id="sumOt">—</span></div></div>
+                <div class="v" id="sumOtV">—</div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="kpi">
+                <div><b>التأخير</b><div><span id="sumLate">—</span></div></div>
+                <div class="v" id="sumLateV">—</div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="kpi">
+                <div><b>الانصراف المبكر</b><div><span id="sumEarly">—</span></div></div>
+                <div class="v" id="sumEarlyV">—</div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="kpi">
+                <div><b>المستحق</b><div><span id="sumNet">—</span></div></div>
+                <div class="v" id="sumNetV">—</div>
+              </div>
+            </div>
+          </div>
+          <div class="footerNote">* القيم تعتمد على إعدادات الشهر التي يضعها Admin.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="pill">📅 جدول أيام الشهر (حسب المسجّل فقط)</div>
+      <div class="hr"></div>
+      <div class="tableWrap">
+        <table>
+          <thead>
+            <tr>
+              <th>التاريخ</th>
+              <th>اليوم</th>
+              <th>الدخول</th>
+              <th>الخروج</th>
+              <th>الإضافي</th>
+              <th>التأخير</th>
+              <th>الانصراف المبكر</th>
+              <th>ملاحظة</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="toast"></div>
+  </div>
+
+<script>
+const APP_KEY = "payrollApp_v1";
+const SESSION_KEY = "payrollSession_v1";
+
+function nowISODate(){
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,"0");
+  const day = String(d.getDate()).padStart(2,"0");
+  return `${y}-${m}-${day}`;
+}
+function ymFromDateStr(dateStr){ return dateStr.slice(0,7); }
+function fmtMoney(n){ 
+  n = Number(n||0);
+  return new Intl.NumberFormat("ar-EG",{maximumFractionDigits:2}).format(n);
+}
+function pad2(n){ return String(n).padStart(2,"0"); }
+function minutesToHM(min){
+  min = Math.max(0, Math.round(min||0));
+  const h = Math.floor(min/60);
+  const m = min%60;
+  return `${h}:${pad2(m)}`;
+}
+function hmToMinutes(hm){
+  if(!hm) return null;
+  const m = /^(\d{1,2}):(\d{2})$/.exec(hm.trim());
+  if(!m) return null;
+  return (+m[1])*60 + (+m[2]);
+}
+function clamp(n,a,b){ return Math.min(b, Math.max(a,n)); }
+
+function toast(type, title, msg){
+  const wrap = document.querySelector(".toast");
+  if(!wrap) return alert(`${title}\n${msg||""}`);
+  const el = document.createElement("div");
+  el.className = `t ${type==="ok"?"ok":"err"}`;
+  el.innerHTML = `
+    <div>
+      <b>${escapeHtml(title)}</b>
+      <div><span>${escapeHtml(msg||"")}</span></div>
+    </div>
+    <button aria-label="إغلاق">×</button>
+  `;
+  el.querySelector("button").onclick = ()=> el.remove();
+  wrap.appendChild(el);
+  setTimeout(()=>{ if(el.isConnected) el.remove(); }, 5200);
+}
+function escapeHtml(s){
+  return String(s ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function loadDB(){
+  const raw = localStorage.getItem(APP_KEY);
+  if(!raw){
+    const init = {
+      version:1,
+      company:{companyName:"", companyLogo:""},
+      departments:[],
+      employees:[],
+      managers:[],
+      monthSettings:{},
+      attendance:{}, // { "YYYY-MM-DD": { "empId": record } }
+      advances:{} // { "YYYY-MM": { "empId": {amount,note} } }
+    };
+    localStorage.setItem(APP_KEY, JSON.stringify(init));
+    return init;
+  }
+  try{ return JSON.parse(raw); }catch(e){
+    console.error(e);
+    localStorage.removeItem(APP_KEY);
+    return loadDB();
+  }
+}
+function saveDB(db){ localStorage.setItem(APP_KEY, JSON.stringify(db)); }
+function uid(prefix="id"){
+  return `${prefix}_${Math.random().toString(16).slice(2)}_${Date.now().toString(16)}`;
+}
+
+function getSession(){
+  const raw = localStorage.getItem(SESSION_KEY);
+  if(!raw) return null;
+  try{ return JSON.parse(raw); }catch(e){ return null; }
+}
+function setSession(obj){ localStorage.setItem(SESSION_KEY, JSON.stringify(obj)); }
+function clearSession(){ localStorage.removeItem(SESSION_KEY); }
+
+function requireAuth(allowedRoles){
+  const s = getSession();
+  if(!s || !allowedRoles.includes(s.role)){
+    window.location.href = "index.html";
+    return null;
+  }
+  return s;
+}
+
+function setBrand(db, roleLabel){
+  const name = db.company.companyName || "نظام إدارة الدوام والرواتب";
+  const logo = db.company.companyLogo || "";
+  const elName = document.querySelector("[data-company-name]");
+  const elLogo = document.querySelector("[data-company-logo]");
+  const elRole = document.querySelector("[data-role]");
+  if(elName) elName.textContent = name;
+  if(elRole) elRole.textContent = roleLabel;
+  if(elLogo){
+    if(logo){
+      elLogo.innerHTML = `<img alt="شعار" src="${logo}">`;
+    }else{
+      elLogo.innerHTML = `<span style="font-weight:800;color:rgba(255,255,255,.65)">🟩</span>`;
+    }
+  }
+}
+
+function wireTabs(){
+  const tabs = [...document.querySelectorAll(".tab")];
+  const sections = [...document.querySelectorAll(".section")];
+  tabs.forEach(t=>{
+    t.addEventListener("click", ()=>{
+      const id = t.getAttribute("data-tab");
+      tabs.forEach(x=>x.classList.toggle("active", x===t));
+      sections.forEach(s=>s.classList.toggle("active", s.id===id));
+      window.scrollTo({top:0,behavior:"smooth"});
+    });
+  });
+  const first = tabs.find(t=>t.classList.contains("active")) || tabs[0];
+  if(first) first.click();
+}
+
+function downloadText(filename, text){
+  const blob = new Blob([text], {type:"text/plain;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+}
+function downloadCSV(filename, rows){
+  const csv = rows.map(r=> r.map(v=>{
+    const s = String(v ?? "");
+    const needs = /[",\n\r]/.test(s);
+    return needs ? `"${s.replaceAll('"','""')}"` : s;
+  }).join(",")).join("\r\n");
+  downloadText(filename, "\ufeff"+csv);
+}
+function parseCSV(text){
+  const rows = [];
+  let i=0, cur="", row=[], inQ=false;
+  while(i < text.length){
+    const ch = text[i];
+    if(inQ){
+      if(ch === '"'){
+        if(text[i+1] === '"'){ cur+='"'; i+=2; continue; }
+        inQ=false; i++; continue;
+      }else{ cur+=ch; i++; continue; }
+    }else{
+      if(ch === '"'){ inQ=true; i++; continue; }
+      if(ch === ','){ row.push(cur); cur=""; i++; continue; }
+      if(ch === '\n'){
+        row.push(cur); cur="";
+        rows.push(row); row=[];
+        i++; continue;
+      }
+      if(ch === '\r'){ i++; continue; }
+      cur+=ch; i++; continue;
+    }
+  }
+  row.push(cur);
+  if(row.length>1 || row[0]!=="" ) rows.push(row);
+  return rows;
+}
+
+function weekdayAr(dateStr){
+  const d = new Date(dateStr+"T00:00:00");
+  const names = ["الأحد","الإثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
+  return names[d.getDay()];
+}
+
+function getMonthSetting(db, ym){
+  return db.monthSettings?.[ym] || null;
+}
+function inferDaysInMonth(ym){
+  const [y,m] = ym.split("-").map(Number);
+  return new Date(y, m, 0).getDate();
+}
+
+function computeDerived(db, dateStr, empId, checkIn, checkOut, excuseType){
+  const ym = ymFromDateStr(dateStr);
+  const ms = getMonthSetting(db, ym);
+  if(!ms) return {lateMinutes:0, earlyLeaveMinutes:0, overtimeMinutes:0, warn:"لا توجد إعدادات لهذا الشهر"};
+  const shiftStartM = hmToMinutes(ms.shiftStart);
+  const shiftEndM = hmToMinutes(ms.shiftEnd);
+  const inM = hmToMinutes(checkIn);
+  const outM = hmToMinutes(checkOut);
+
+  let late=0, early=0, ot=0;
+  if(inM != null && shiftStartM != null){
+    const grace = Number(ms.lateGraceMinutes||0);
+    late = Math.max(0, inM - (shiftStartM + grace));
+  }
+  if(outM != null && shiftEndM != null){
+    const graceE = Number(ms.earlyLeaveGraceMinutes||0);
+    early = Math.max(0, (shiftEndM - graceE) - outM);
+    ot = Math.max(0, outM - shiftEndM);
+  }
+  if(excuseType === "late_excused") late = 0;
+  if(excuseType === "early_excused") early = 0;
+  if(excuseType === "absent_excused"){ late=0; early=0; ot=0; }
+  return {lateMinutes:Math.round(late), earlyLeaveMinutes:Math.round(early), overtimeMinutes:Math.round(ot), warn:null};
+}
+
+function getAttendanceRecord(db, dateStr, empId){
+  return db.attendance?.[dateStr]?.[empId] || null;
+}
+function setAttendanceRecord(db, dateStr, empId, rec){
+  if(!db.attendance[dateStr]) db.attendance[dateStr] = {};
+  db.attendance[dateStr][empId] = rec;
+}
+function deleteAttendanceRecord(db, dateStr, empId){
+  if(db.attendance?.[dateStr]?.[empId]) delete db.attendance[dateStr][empId];
+  if(db.attendance?.[dateStr] && Object.keys(db.attendance[dateStr]).length===0) delete db.attendance[dateStr];
+}
+
+function getAdvance(db, ym, empId){
+  return db.advances?.[ym]?.[empId] || {amount:0,note:""};
+}
+function setAdvance(db, ym, empId, obj){
+  if(!db.advances[ym]) db.advances[ym] = {};
+  db.advances[ym][empId] = {amount:Number(obj.amount||0), note:String(obj.note||"")};
+}
+
+function calcPayrollForEmployee(db, ym, emp){
+  const ms = getMonthSetting(db, ym);
+  const days = ms?.daysInMonth ? Number(ms.daysInMonth) : inferDaysInMonth(ym);
+  const workHours = Number(ms?.workHoursInMonth||0);
+  const hourValue = workHours>0 ? (Number(emp.monthlySalary||0)/workHours) : 0;
+
+  const multipliers = {
+    late: Number(ms?.latePenaltyMultiplier || 1.5),
+    early: Number(ms?.earlyPenaltyMultiplier || 1.0),
+    ot: Number(ms?.overtimeMultiplier || 1.0),
+  };
+
+  let totalLateMin=0, totalEarlyMin=0, totalOtMin=0;
+  for(let d=1; d<=days; d++){
+    const dateStr = `${ym}-${pad2(d)}`;
+    const r = getAttendanceRecord(db, dateStr, emp.id);
+    if(r){
+      totalLateMin += Number(r.lateMinutes||0);
+      totalEarlyMin += Number(r.earlyLeaveMinutes||0);
+      totalOtMin += Number(r.overtimeMinutes||0);
+    }
+  }
+
+  const lateDeduction = (totalLateMin/60)*hourValue*multipliers.late;
+  const earlyDeduction = (totalEarlyMin/60)*hourValue*multipliers.early;
+  const otValue = (totalOtMin/60)*hourValue*multipliers.ot;
+
+  const adv = getAdvance(db, ym, emp.id);
+  const advances = Number(adv.amount||0);
+
+  const net = Number(emp.monthlySalary||0) + otValue - lateDeduction - earlyDeduction - advances;
+
+  return {
+    ym, days, workHours, hourValue,
+    totalLateMin, totalEarlyMin, totalOtMin,
+    lateDeduction, earlyDeduction, otValue,
+    advances, net, multipliers
+  };
+}
+
+function openPayslipPrintWindow(db, ym, emp){
+  const dep = db.departments.find(d=>d.id===emp.departmentId);
+  const depName = dep ? dep.name : "—";
+  const ms = getMonthSetting(db, ym);
+  const days = ms?.daysInMonth ? Number(ms.daysInMonth) : inferDaysInMonth(ym);
+  const logo = db.company.companyLogo || "";
+  const company = db.company.companyName || "—";
+
+  const pay = calcPayrollForEmployee(db, ym, emp);
+
+  const rows = [];
+  for(let d=1; d<=days; d++){
+    const dateStr = `${ym}-${pad2(d)}`;
+    const r = getAttendanceRecord(db, dateStr, emp.id);
+    if(r){
+      rows.push(`
+        <tr>
+          <td>${escapeHtml(dateStr)}</td>
+          <td>${escapeHtml(weekdayAr(dateStr))}</td>
+          <td>${escapeHtml(r.checkIn||"")}</td>
+          <td>${escapeHtml(r.checkOut||"")}</td>
+          <td>${escapeHtml(minutesToHM(r.overtimeMinutes||0))}</td>
+          <td>${escapeHtml(minutesToHM(r.lateMinutes||0))}</td>
+          <td>${escapeHtml(minutesToHM(r.earlyLeaveMinutes||0))}</td>
+        </tr>
+      `);
+    }
+  }
+
+  const html = `
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>صك قبض - ${escapeHtml(emp.name)}</title>
+<style>
+  body{font-family:Tahoma,Arial,sans-serif;margin:0;background:#fff;color:#111}
+  .page{padding:24px 28px}
+  .top{display:flex;align-items:center;justify-content:space-between;gap:16px;border-bottom:2px solid #111;padding-bottom:14px}
+  .logo{width:60px;height:60px;border:1px solid #ddd;border-radius:12px;overflow:hidden;display:grid;place-items:center}
+  .logo img{width:100%;height:100%;object-fit:cover}
+  h1{margin:0;font-size:20px}
+  .meta{margin-top:8px;color:#333;font-size:13px;line-height:1.7}
+  table{width:100%;border-collapse:collapse;margin-top:14px}
+  th,td{border:1px solid #ddd;padding:8px;font-size:12px;text-align:right}
+  th{background:#f3f4f6}
+  .sum{margin-top:14px;border:1px solid #ddd;border-radius:10px;padding:12px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .line{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px dashed #e5e7eb}
+  .line:last-child{border-bottom:0}
+  .sig{display:flex;justify-content:space-between;margin-top:26px}
+  .sig .box{width:46%;border-top:1px solid #111;padding-top:10px;text-align:center;font-size:13px}
+  @media print{ .noPrint{display:none} .page{padding:14mm} }
+</style>
+</head>
+<body>
+  <div class="page">
+    <div class="top">
+      <div class="logo">${logo?`<img src="${logo}" alt="شعار">`:""}</div>
+      <div style="flex:1">
+        <h1>${escapeHtml(company)} — صك قبض راتب</h1>
+        <div class="meta">
+          <div><b>الموظف:</b> ${escapeHtml(emp.name)} — <b>القسم:</b> ${escapeHtml(depName)}</div>
+          <div><b>الشهر:</b> ${escapeHtml(ym)}</div>
+        </div>
+      </div>
+      <button class="noPrint" onclick="window.print()" style="padding:10px 14px;border:1px solid #111;background:#111;color:#fff;border-radius:10px;cursor:pointer">طباعة / حفظ PDF</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>التاريخ</th>
+          <th>اليوم</th>
+          <th>الدخول</th>
+          <th>الخروج</th>
+          <th>الإضافي</th>
+          <th>التأخير</th>
+          <th>الانصراف المبكر</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows.join("") || `<tr><td colspan="7" style="text-align:center;color:#666">لا توجد سجلات لهذا الشهر</td></tr>`}
+      </tbody>
+    </table>
+
+    <div class="sum">
+      <div class="grid">
+        <div class="line"><span>مجموع الإضافي</span><b>${minutesToHM(pay.totalOtMin)} — ${fmtMoney(pay.otValue)}</b></div>
+        <div class="line"><span>مجموع التأخير</span><b>${minutesToHM(pay.totalLateMin)} — ${fmtMoney(pay.lateDeduction)}</b></div>
+        <div class="line"><span>مجموع الانصراف المبكر</span><b>${minutesToHM(pay.totalEarlyMin)} — ${fmtMoney(pay.earlyDeduction)}</b></div>
+        <div class="line"><span>السلف</span><b>${fmtMoney(pay.advances)}</b></div>
+        <div class="line" style="grid-column:1/-1;border-top:1px solid #e5e7eb;padding-top:10px">
+          <span><b>المستحق النهائي</b></span><b style="font-size:16px">${fmtMoney(pay.net)}</b>
+        </div>
+      </div>
+    </div>
+
+    <div class="sig">
+      <div class="box">توقيع الموظف</div>
+      <div class="box">توقيع الإدارة</div>
+    </div>
+  </div>
+</body>
+</html>
+  `.trim();
+
+  const w = window.open("", "_blank");
+  w.document.open();
+  w.document.write(html);
+  w.document.close();
+}
+
+function ensureSeedData(db){
+  if(db.departments.length===0 && db.employees.length===0 && db.managers.length===0 && !db.company.companyName){
+    db.company.companyName = "شركة تجريبية";
+    const depId = uid("dep");
+    db.departments.push({id:depId, name:"إدارة"});
+    db.employees.push({id:uid("emp"), name:"موظف تجريبي", departmentId:depId, monthlySalary:3000, active:true, notes:""});
+    const ym = nowISODate().slice(0,7);
+    db.monthSettings[ym] = {
+      daysInMonth: inferDaysInMonth(ym),
+      workHoursInMonth: 240,
+      shiftStart:"09:00",
+      shiftEnd:"17:00",
+      lateGraceMinutes:10,
+      earlyLeaveGraceMinutes:10,
+      latePenaltyMultiplier:1.5,
+      earlyPenaltyMultiplier:1.0,
+      overtimeMultiplier:1.25
+    };
+    saveDB(db);
+  }
+}
+</script>
+<script>
+(function(){
+  const s = requireAuth(["employee"]);
+  const db = loadDB();
+  setBrand(db, "Employee");
+
+  document.getElementById("logoutBtn").onclick = ()=>{ clearSession(); location.href="index.html"; };
+
+  const emp = db.employees.find(e=>e.id===s.employeeId);
+  if(!emp){
+    toast("err","لا يمكن فتح الحساب","هذا الموظف لم يعد موجودًا.");
+    clearSession();
+    setTimeout(()=>location.href="index.html", 800);
+    return;
+  }
+  const dep = db.departments.find(d=>d.id===emp.departmentId);
+  document.getElementById("empName").textContent = emp.name;
+  document.getElementById("empMeta").textContent = `القسم: ${dep?dep.name:"—"} — الراتب: ${fmtMoney(emp.monthlySalary)}`;
+
+  const ymSel = document.getElementById("ymSel");
+  const now = new Date();
+  const curYm = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}`;
+  const prev = new Date(now.getFullYear(), now.getMonth()-1, 1);
+  const prevYm = `${prev.getFullYear()}-${String(prev.getMonth()+1).padStart(2,"0")}`;
+
+  const opts = [curYm, prevYm].filter((v,i,a)=>a.indexOf(v)===i);
+  ymSel.innerHTML = opts.map(v=>`<option value="${v}">${v}</option>`).join("");
+  ymSel.value = curYm;
+
+  ymSel.addEventListener("change", renderMonth);
+  document.getElementById("printBtn").onclick = ()=> openPayslipPrintWindow(db, ymSel.value, emp);
+
+  renderMonth();
+
+  function renderMonth(){
+    const ym = ymSel.value;
+    const pay = calcPayrollForEmployee(db, ym, emp);
+
+    document.getElementById("sumOt").textContent = `ساعات: ${(pay.totalOtMin/60).toFixed(2)}`;
+    document.getElementById("sumOtV").textContent = fmtMoney(pay.otValue);
+    document.getElementById("sumLate").textContent = `ساعات: ${(pay.totalLateMin/60).toFixed(2)}`;
+    document.getElementById("sumLateV").textContent = fmtMoney(pay.lateDeduction);
+    document.getElementById("sumEarly").textContent = `ساعات: ${(pay.totalEarlyMin/60).toFixed(2)}`;
+    document.getElementById("sumEarlyV").textContent = fmtMoney(pay.earlyDeduction);
+    document.getElementById("sumNet").textContent = `الراتب: ${fmtMoney(emp.monthlySalary)} — سلف: ${fmtMoney(pay.advances)}`;
+    document.getElementById("sumNetV").textContent = fmtMoney(pay.net);
+
+    const tbody = document.getElementById("tbody");
+    tbody.innerHTML = "";
+
+    const ms = getMonthSetting(db, ym);
+    const days = ms?.daysInMonth ? Number(ms.daysInMonth) : inferDaysInMonth(ym);
+
+    let any=false;
+    for(let d=1; d<=days; d++){
+      const dateStr = `${ym}-${pad2(d)}`;
+      const r = getAttendanceRecord(db, dateStr, emp.id);
+      if(!r) continue;
+      any=true;
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${escapeHtml(dateStr)}</td>
+        <td>${escapeHtml(weekdayAr(dateStr))}</td>
+        <td>${escapeHtml(r.checkIn||"")}</td>
+        <td>${escapeHtml(r.checkOut||"")}</td>
+        <td>${escapeHtml(minutesToHM(r.overtimeMinutes||0))}</td>
+        <td>${escapeHtml(minutesToHM(r.lateMinutes||0))}</td>
+        <td>${escapeHtml(minutesToHM(r.earlyLeaveMinutes||0))}</td>
+        <td>${escapeHtml(r.note||"")}</td>
+      `;
+      tbody.appendChild(tr);
+    }
+
+    if(!any){
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td colspan="8" style="text-align:center;color:rgba(168,179,214,.9)">لا توجد سجلات لهذا الشهر</td>`;
+      tbody.appendChild(tr);
+    }
+  }
+
+})();
+</script>
+</body>
+</html>

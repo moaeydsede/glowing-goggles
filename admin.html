@@ -1,0 +1,1766 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>لوحة الإدارة — نظام الدوام والرواتب</title>
+<style>
+:root{
+  --bg:#0b1220;
+  --card:#0f1a30;
+  --card2:#101f3a;
+  --text:#eaf0ff;
+  --muted:#a8b3d6;
+  --line:rgba(255,255,255,.10);
+  --green:#22c55e;
+  --green2:#16a34a;
+  --red:#ef4444;
+  --amber:#f59e0b;
+  --blue:#60a5fa;
+  --shadow: 0 12px 30px rgba(0,0,0,.35);
+  --radius:18px;
+  --radius2:14px;
+  --pad:14px;
+  --font: system-ui, -apple-system, "Segoe UI", Tahoma, Arial, "Noto Kufi Arabic", "Noto Sans Arabic", sans-serif;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:var(--font);
+  background: radial-gradient(1200px 600px at 80% -10%, rgba(34,197,94,.25), transparent 55%),
+              radial-gradient(1000px 500px at 20% 0%, rgba(96,165,250,.20), transparent 55%),
+              linear-gradient(180deg, #070b14 0%, #0b1220 60%, #070b14 100%);
+  color:var(--text);
+  direction:rtl;
+}
+
+a{color:inherit}
+.container{max-width:1100px;margin:0 auto;padding:18px}
+.card{
+  background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+  border:1px solid var(--line);
+  box-shadow:var(--shadow);
+  border-radius:var(--radius);
+  padding:var(--pad);
+  backdrop-filter: blur(8px);
+}
+.card + .card{margin-top:14px}
+.row{display:flex;gap:12px;flex-wrap:wrap}
+.col{flex:1 1 260px;min-width:240px}
+
+.hdr{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:14px 16px;
+  position:sticky;top:0;z-index:50;
+  background: rgba(7,11,20,.65);
+  backdrop-filter: blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.brand{
+  display:flex;align-items:center;gap:10px;min-width:0
+}
+.brand .logo{
+  width:40px;height:40px;border-radius:12px;overflow:hidden;
+  background: rgba(255,255,255,.06);
+  border:1px solid var(--line);
+  display:grid;place-items:center;flex:0 0 auto
+}
+.brand .logo img{width:100%;height:100%;object-fit:cover}
+.brand .title{display:flex;flex-direction:column;min-width:0}
+.brand .title b{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand .title span{font-size:12px;color:var(--muted)}
+.badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:6px 10px;border-radius:999px;border:1px solid var(--line);
+  background: rgba(255,255,255,.05);
+  font-size:12px;color:var(--muted)
+}
+
+.tabs{
+  display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 0;
+  position:sticky;top:78px;z-index:40;
+  padding-bottom:8px;background: rgba(7,11,20,.35);backdrop-filter: blur(10px);
+}
+.tab{
+  border:1px solid var(--line);
+  background: rgba(255,255,255,.04);
+  color:var(--muted);
+  padding:10px 12px;border-radius:999px;
+  font-size:13px;cursor:pointer;user-select:none;
+  transition: transform .08s ease, background .15s ease, color .15s ease;
+}
+.tab:active{transform:scale(.98)}
+.tab.active{
+  background: rgba(34,197,94,.18);
+  border-color: rgba(34,197,94,.40);
+  color:var(--text);
+}
+.section{display:none}
+.section.active{display:block}
+
+label{display:block;font-size:12px;color:var(--muted);margin:10px 0 6px}
+input,select,textarea{
+  width:100%;
+  padding:12px 12px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.14);
+  background: rgba(15,26,48,.60);
+  color:var(--text);
+  outline:none;
+}
+input::placeholder, textarea::placeholder{color:rgba(168,179,214,.65)}
+textarea{min-height:90px;resize:vertical}
+
+.btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.btn{
+  border:1px solid transparent;
+  background: rgba(255,255,255,.08);
+  color:var(--text);
+  padding:11px 14px;border-radius:14px;
+  font-size:14px;cursor:pointer;user-select:none;
+  display:inline-flex;align-items:center;gap:10px;
+  transition: transform .08s ease, filter .15s ease, background .15s ease, border-color .15s ease;
+}
+.btn:active{transform:scale(.98)}
+.btn.primary{background: linear-gradient(180deg, rgba(34,197,94,.95), rgba(22,163,74,.85));}
+.btn.primary:hover{filter:brightness(1.06)}
+.btn.danger{background: rgba(239,68,68,.18);border-color: rgba(239,68,68,.35)}
+.btn.ghost{background: rgba(255,255,255,.04);border-color: rgba(255,255,255,.10)}
+.btn.small{padding:8px 10px;border-radius:12px;font-size:12px}
+
+.hr{height:1px;background:var(--line);margin:14px 0}
+.kpi{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+  border:1px solid var(--line);
+  background: rgba(255,255,255,.04);
+  border-radius:var(--radius2);
+  padding:12px 12px;
+}
+.kpi b{font-size:14px}
+.kpi span{font-size:12px;color:var(--muted)}
+.kpi .v{font-size:18px;margin-top:4px}
+
+.tableWrap{overflow:auto;border-radius:14px;border:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;min-width:720px;background: rgba(15,26,48,.45)}
+th,td{padding:10px 10px;border-bottom:1px solid rgba(255,255,255,.08);font-size:13px;vertical-align:top}
+th{position:sticky;top:0;background: rgba(7,11,20,.75);backdrop-filter: blur(8px);text-align:right;color:var(--muted);font-weight:600}
+tr:hover td{background: rgba(255,255,255,.03)}
+
+.toast{
+  position:fixed;inset:auto 14px 14px 14px;z-index:999;
+  display:flex;flex-direction:column;gap:8px;pointer-events:none
+}
+.toast .t{
+  pointer-events:auto;
+  padding:12px 12px;border-radius:14px;border:1px solid var(--line);
+  background: rgba(7,11,20,.70);backdrop-filter: blur(10px);
+  box-shadow:var(--shadow);
+  display:flex;justify-content:space-between;gap:10px;align-items:flex-start
+}
+.toast .t.ok{border-color: rgba(34,197,94,.35)}
+.toast .t.err{border-color: rgba(239,68,68,.35)}
+.toast .t b{font-size:13px}
+.toast .t span{font-size:12px;color:var(--muted)}
+.toast .t button{
+  background:transparent;border:0;color:var(--muted);cursor:pointer;font-size:16px;line-height:1
+}
+
+.footerNote{color:var(--muted);font-size:12px;line-height:1.7}
+.pill{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:7px 10px;border-radius:999px;
+  border:1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.04);
+  color:var(--muted);font-size:12px
+}
+
+@media (min-width:900px){
+  .hdr{padding:16px 22px}
+  .container{padding:22px}
+  .tabs{top:82px}
+}
+
+@media print{
+  body{background:#fff;color:#000}
+  .noPrint{display:none !important}
+  .card{box-shadow:none;border-color:#ddd;background:#fff}
+  table{background:#fff}
+  th{background:#f3f4f6;color:#111}
+  td,th{border-bottom:1px solid #ddd}
+}
+</style>
+</head>
+<body>
+  <div class="hdr noPrint">
+    <div class="brand">
+      <div class="logo" data-company-logo></div>
+      <div class="title">
+        <b data-company-name>—</b>
+        <span>لوحة الإدارة</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <span class="badge" data-role>Admin</span>
+      <button class="btn ghost small" id="logoutBtn">خروج</button>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <div class="tabs noPrint">
+      <div class="tab active" data-tab="secCompany">بيانات الشركة</div>
+      <div class="tab" data-tab="secDeps">الأقسام</div>
+      <div class="tab" data-tab="secEmps">الموظفون</div>
+      <div class="tab" data-tab="secManagers">المدراء</div>
+      <div class="tab" data-tab="secMonth">إعدادات الشهر</div>
+      <div class="tab" data-tab="secAttendance">تسجيل الدوام</div>
+      <div class="tab" data-tab="secAdvances">السلف</div>
+      <div class="tab" data-tab="secPayroll">الرواتب</div>
+      <div class="tab" data-tab="secExcel">Excel (CSV)</div>
+    </div>
+
+    <div class="section card" id="secCompany">
+      <div class="row">
+        <div class="col">
+          <div class="pill">🏢 بيانات الشركة</div>
+          <label>اسم الشركة</label>
+          <input id="companyName">
+          <label>شعار الشركة (صورة)</label>
+          <input id="companyLogoFile" type="file" accept="image/*">
+          <div class="btns">
+            <button class="btn primary" id="saveCompanyBtn">حفظ</button>
+            <button class="btn danger" id="clearLogoBtn">حذف الشعار</button>
+          </div>
+          <div class="footerNote">الشعار يظهر في صك القبض + واجهة الموظف.</div>
+        </div>
+        <div class="col">
+          <div class="kpi">
+            <div>
+              <b>إحصائيات سريعة</b>
+              <div><span id="statsTxt">—</span></div>
+            </div>
+            <div class="v">📊</div>
+          </div>
+
+          <div class="hr"></div>
+          <div class="footerNote">
+            * النظام يعمل بدون سيرفر — البيانات محفوظة في LocalStorage داخل المتصفح.<br>
+            * يفضّل استخدام زر التصدير بشكل دوري كنسخة احتياطية.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section card" id="secDeps">
+      <div class="pill">🧩 إدارة الأقسام</div>
+      <div class="row">
+        <div class="col">
+          <label>اسم القسم</label>
+          <input id="depName" placeholder="مثال: إدارة / مبيعات / إنتاج">
+          <div class="btns">
+            <button class="btn primary" id="addDepBtn">إضافة قسم</button>
+          </div>
+        </div>
+        <div class="col">
+          <label>بحث</label>
+          <input id="depSearch" placeholder="اكتب للبحث...">
+        </div>
+      </div>
+      <div class="hr"></div>
+      <div class="tableWrap">
+        <table>
+          <thead><tr><th>القسم</th><th style="width:180px">إجراءات</th></tr></thead>
+          <tbody id="depTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section card" id="secEmps">
+      <div class="pill">👥 إدارة الموظفين</div>
+      <div class="row">
+        <div class="col">
+          <label>الاسم</label>
+          <input id="empNameIn">
+          <label>القسم</label>
+          <select id="empDep"></select>
+          <label>الراتب الشهري</label>
+          <input id="empSalary" type="number" inputmode="decimal" placeholder="مثال: 3000">
+          <label>ملاحظة (اختياري)</label>
+          <input id="empNote" placeholder="كود/ملاحظة">
+          <div class="btns">
+            <button class="btn primary" id="addEmpBtn">حفظ الموظف</button>
+            <button class="btn ghost" id="resetEmpFormBtn">تفريغ</button>
+          </div>
+          <input type="hidden" id="empEditId">
+        </div>
+        <div class="col">
+          <label>بحث</label>
+          <input id="empSearch" placeholder="بحث بالاسم...">
+          <div class="hr"></div>
+          <div class="footerNote">نصيحة: اسم الموظف يجب أن يكون فريدًا حتى يعمل دخول الموظف بسهولة.</div>
+        </div>
+      </div>
+      <div class="hr"></div>
+      <div class="tableWrap">
+        <table>
+          <thead>
+            <tr>
+              <th>الاسم</th>
+              <th>القسم</th>
+              <th>الراتب</th>
+              <th>نشط</th>
+              <th style="width:220px">إجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="empTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section card" id="secManagers">
+      <div class="pill">👔 إدارة المدراء (Manager)</div>
+      <div class="row">
+        <div class="col">
+          <label>اسم المستخدم</label>
+          <input id="mUser" placeholder="مثال: manager1">
+          <label>كلمة السر</label>
+          <input id="mPass" type="password" placeholder="••••••••">
+          <div class="btns">
+            <button class="btn primary" id="addManagerBtn">إضافة مدير</button>
+          </div>
+        </div>
+        <div class="col">
+          <label>بحث</label>
+          <input id="mSearch" placeholder="بحث باسم المستخدم...">
+        </div>
+      </div>
+      <div class="hr"></div>
+      <div class="tableWrap">
+        <table>
+          <thead><tr><th>اسم المستخدم</th><th style="width:180px">إجراءات</th></tr></thead>
+          <tbody id="mTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section card" id="secMonth">
+      <div class="pill">🗓️ إعدادات الشهر</div>
+      <div class="row">
+        <div class="col">
+          <label>الشهر</label>
+          <input id="msYm" type="month">
+          <label>عدد أيام الشهر</label>
+          <select id="msDays">
+            <option value="28">28</option>
+            <option value="29">29</option>
+            <option value="30">30</option>
+            <option value="31">31</option>
+          </select>
+          <label>ساعات العمل في الشهر</label>
+          <input id="msWorkHours" type="number" inputmode="decimal" placeholder="مثال: 240">
+        </div>
+        <div class="col">
+          <label>وقت الدوام (من)</label>
+          <input id="msStart" type="time" value="09:00">
+          <label>وقت الدوام (إلى)</label>
+          <input id="msEnd" type="time" value="17:00">
+          <label>السماح للتأخير (دقائق)</label>
+          <input id="msLateGrace" type="number" value="10">
+          <label>السماح للانصراف المبكر (دقائق)</label>
+          <input id="msEarlyGrace" type="number" value="10">
+        </div>
+        <div class="col">
+          <label>معامل خصم التأخير</label>
+          <input id="msLateMul" type="number" inputmode="decimal" value="1.5" step="0.1">
+          <label>معامل خصم الانصراف المبكر</label>
+          <input id="msEarlyMul" type="number" inputmode="decimal" value="1.0" step="0.1">
+          <label>معامل الإضافي</label>
+          <input id="msOtMul" type="number" inputmode="decimal" value="1.25" step="0.1">
+        </div>
+      </div>
+      <div class="btns">
+        <button class="btn primary" id="saveMonthBtn">حفظ إعدادات الشهر</button>
+        <button class="btn danger" id="deleteMonthBtn">حذف إعدادات الشهر</button>
+      </div>
+      <div class="footerNote">تأكد من إعداد الشهر قبل تسجيل الدوام لتعمل الحسابات تلقائيًا.</div>
+    </div>
+
+    <div class="section card" id="secAttendance">
+      <div class="pill">🕒 تسجيل الدوام + الأعذار/الاستثناءات</div>
+      <div class="row">
+        <div class="col">
+          <label>الموظف</label>
+          <select id="attEmp"></select>
+          <label>التاريخ</label>
+          <input id="attDate" type="date">
+          <label>الدخول</label>
+          <input id="attIn" type="time">
+          <label>الخروج</label>
+          <input id="attOut" type="time">
+        </div>
+        <div class="col">
+          <label>نوع العذر / الاستثناء</label>
+          <select id="attExcuse">
+            <option value="none">بدون</option>
+            <option value="late_excused">تأخير بعذر</option>
+            <option value="early_excused">انصراف مبكر بعذر</option>
+            <option value="absent_excused">غياب بعذر</option>
+          </select>
+
+          <label>مشوار خارج المصنع</label>
+          <select id="attOutFactory">
+            <option value="false">لا</option>
+            <option value="true">نعم</option>
+          </select>
+
+          <label>ملاحظة</label>
+          <textarea id="attNote" placeholder="اكتب ملاحظة (اختياري)"></textarea>
+
+          <div class="btns">
+            <button class="btn primary" id="saveAttBtn">حفظ السجل</button>
+            <button class="btn danger" id="delAttBtn">حذف السجل</button>
+          </div>
+
+          <div class="hr"></div>
+          <div class="kpi">
+            <div>
+              <b>احتساب تلقائي</b>
+              <div><span id="attCalcTxt">—</span></div>
+            </div>
+            <div class="v">⚙️</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+      <div class="row">
+        <div class="col">
+          <label>عرض سجلات يوم</label>
+          <input id="attListDate" type="date">
+        </div>
+        <div class="col">
+          <label>بحث بالاسم (ضمن هذا اليوم)</label>
+          <input id="attListSearch" placeholder="اكتب...">
+        </div>
+      </div>
+
+      <div class="hr"></div>
+      <div class="tableWrap">
+        <table>
+          <thead>
+            <tr>
+              <th>الموظف</th>
+              <th>الدخول</th>
+              <th>الخروج</th>
+              <th>الإضافي</th>
+              <th>التأخير</th>
+              <th>مبكر</th>
+              <th>عذر</th>
+              <th>خارج المصنع</th>
+              <th>ملاحظة</th>
+              <th style="width:120px">إجراء</th>
+            </tr>
+          </thead>
+          <tbody id="attTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section card" id="secAdvances">
+      <div class="pill">💳 السلف</div>
+      <div class="row">
+        <div class="col">
+          <label>الشهر</label>
+          <input id="advYm" type="month">
+        </div>
+        <div class="col">
+          <label>الموظف</label>
+          <select id="advEmp"></select>
+        </div>
+        <div class="col">
+          <label>المبلغ</label>
+          <input id="advAmount" type="number" inputmode="decimal">
+        </div>
+      </div>
+      <label>ملاحظة</label>
+      <input id="advNote">
+      <div class="btns">
+        <button class="btn primary" id="saveAdvBtn">حفظ السلفة</button>
+      </div>
+      <div class="footerNote">السلف تخص الشهر المحدد وتُخصم من المستحق النهائي.</div>
+    </div>
+
+    <div class="section card" id="secPayroll">
+      <div class="pill">💰 الرواتب والتقارير</div>
+      <div class="row">
+        <div class="col">
+          <label>الشهر</label>
+          <input id="payYm" type="month">
+        </div>
+        <div class="col">
+          <label>بحث بالاسم</label>
+          <input id="paySearch" placeholder="اكتب...">
+        </div>
+        <div class="col">
+          <label>تصدير تقرير رواتب (CSV)</label>
+          <div class="btns">
+            <button class="btn primary" id="exportPayrollBtn">تصدير</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+      <div class="tableWrap">
+        <table>
+          <thead>
+            <tr>
+              <th>الموظف</th>
+              <th>القسم</th>
+              <th>الراتب</th>
+              <th>إضافي (س)</th>
+              <th>قيمة الإضافي</th>
+              <th>تأخير (س)</th>
+              <th>خصم التأخير</th>
+              <th>مبكر (س)</th>
+              <th>خصم المبكر</th>
+              <th>السلف</th>
+              <th>المستحق</th>
+              <th style="width:160px">إجراء</th>
+            </tr>
+          </thead>
+          <tbody id="payTbody"></tbody>
+        </table>
+      </div>
+      <div class="footerNote">زر "صك قبض" يفتح نافذة للطباعة / حفظ PDF.</div>
+    </div>
+
+    <div class="section card" id="secExcel">
+      <div class="pill">📁 Excel Import/Export (CSV)</div>
+      <div class="row">
+        <div class="col">
+          <div class="kpi">
+            <div>
+              <b>تصدير قوالب</b>
+              <div><span>تعمل داخل Excel بسهولة (CSV).</span></div>
+            </div>
+            <div class="v">⬇️</div>
+          </div>
+          <div class="btns">
+            <button class="btn primary" id="tplEmployeesBtn">قالب الموظفين</button>
+            <button class="btn primary" id="tplAttendanceBtn">قالب الدوام</button>
+          </div>
+          <div class="btns">
+            <button class="btn ghost" id="backupBtn">نسخة احتياطية (JSON)</button>
+          </div>
+        </div>
+        <div class="col">
+          <div class="kpi">
+            <div>
+              <b>استيراد</b>
+              <div><span>CSV للموظفين أو الدوام + استعادة نسخة JSON.</span></div>
+            </div>
+            <div class="v">⬆️</div>
+          </div>
+
+          <label>استيراد موظفين (CSV)</label>
+          <input id="impEmployees" type="file" accept=".csv,text/csv">
+
+          <label>استيراد دوام (CSV)</label>
+          <input id="impAttendance" type="file" accept=".csv,text/csv">
+
+          <label>استعادة نسخة (JSON)</label>
+          <input id="impBackup" type="file" accept=".json,application/json">
+        </div>
+      </div>
+
+      <div class="hr"></div>
+      <div class="footerNote">
+        الأعمدة المتوقعة (موظفين): الاسم, القسم, الراتب الشهري, ملاحظة<br>
+        الأعمدة المتوقعة (دوام): التاريخ, اسم الموظف, الدخول, الخروج, عذر, نوع العذر, مشوار خارج المصنع, ملاحظة
+      </div>
+    </div>
+
+    <div class="toast"></div>
+  </div>
+
+<script>
+const APP_KEY = "payrollApp_v1";
+const SESSION_KEY = "payrollSession_v1";
+
+function nowISODate(){
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,"0");
+  const day = String(d.getDate()).padStart(2,"0");
+  return `${y}-${m}-${day}`;
+}
+function ymFromDateStr(dateStr){ return dateStr.slice(0,7); }
+function fmtMoney(n){ 
+  n = Number(n||0);
+  return new Intl.NumberFormat("ar-EG",{maximumFractionDigits:2}).format(n);
+}
+function pad2(n){ return String(n).padStart(2,"0"); }
+function minutesToHM(min){
+  min = Math.max(0, Math.round(min||0));
+  const h = Math.floor(min/60);
+  const m = min%60;
+  return `${h}:${pad2(m)}`;
+}
+function hmToMinutes(hm){
+  if(!hm) return null;
+  const m = /^(\d{1,2}):(\d{2})$/.exec(hm.trim());
+  if(!m) return null;
+  return (+m[1])*60 + (+m[2]);
+}
+function clamp(n,a,b){ return Math.min(b, Math.max(a,n)); }
+
+function toast(type, title, msg){
+  const wrap = document.querySelector(".toast");
+  if(!wrap) return alert(`${title}\n${msg||""}`);
+  const el = document.createElement("div");
+  el.className = `t ${type==="ok"?"ok":"err"}`;
+  el.innerHTML = `
+    <div>
+      <b>${escapeHtml(title)}</b>
+      <div><span>${escapeHtml(msg||"")}</span></div>
+    </div>
+    <button aria-label="إغلاق">×</button>
+  `;
+  el.querySelector("button").onclick = ()=> el.remove();
+  wrap.appendChild(el);
+  setTimeout(()=>{ if(el.isConnected) el.remove(); }, 5200);
+}
+function escapeHtml(s){
+  return String(s ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function loadDB(){
+  const raw = localStorage.getItem(APP_KEY);
+  if(!raw){
+    const init = {
+      version:1,
+      company:{companyName:"", companyLogo:""},
+      departments:[],
+      employees:[],
+      managers:[],
+      monthSettings:{},
+      attendance:{}, // { "YYYY-MM-DD": { "empId": record } }
+      advances:{} // { "YYYY-MM": { "empId": {amount,note} } }
+    };
+    localStorage.setItem(APP_KEY, JSON.stringify(init));
+    return init;
+  }
+  try{ return JSON.parse(raw); }catch(e){
+    console.error(e);
+    localStorage.removeItem(APP_KEY);
+    return loadDB();
+  }
+}
+function saveDB(db){ localStorage.setItem(APP_KEY, JSON.stringify(db)); }
+function uid(prefix="id"){
+  return `${prefix}_${Math.random().toString(16).slice(2)}_${Date.now().toString(16)}`;
+}
+
+function getSession(){
+  const raw = localStorage.getItem(SESSION_KEY);
+  if(!raw) return null;
+  try{ return JSON.parse(raw); }catch(e){ return null; }
+}
+function setSession(obj){ localStorage.setItem(SESSION_KEY, JSON.stringify(obj)); }
+function clearSession(){ localStorage.removeItem(SESSION_KEY); }
+
+function requireAuth(allowedRoles){
+  const s = getSession();
+  if(!s || !allowedRoles.includes(s.role)){
+    window.location.href = "index.html";
+    return null;
+  }
+  return s;
+}
+
+function setBrand(db, roleLabel){
+  const name = db.company.companyName || "نظام إدارة الدوام والرواتب";
+  const logo = db.company.companyLogo || "";
+  const elName = document.querySelector("[data-company-name]");
+  const elLogo = document.querySelector("[data-company-logo]");
+  const elRole = document.querySelector("[data-role]");
+  if(elName) elName.textContent = name;
+  if(elRole) elRole.textContent = roleLabel;
+  if(elLogo){
+    if(logo){
+      elLogo.innerHTML = `<img alt="شعار" src="${logo}">`;
+    }else{
+      elLogo.innerHTML = `<span style="font-weight:800;color:rgba(255,255,255,.65)">🟩</span>`;
+    }
+  }
+}
+
+function wireTabs(){
+  const tabs = [...document.querySelectorAll(".tab")];
+  const sections = [...document.querySelectorAll(".section")];
+  tabs.forEach(t=>{
+    t.addEventListener("click", ()=>{
+      const id = t.getAttribute("data-tab");
+      tabs.forEach(x=>x.classList.toggle("active", x===t));
+      sections.forEach(s=>s.classList.toggle("active", s.id===id));
+      window.scrollTo({top:0,behavior:"smooth"});
+    });
+  });
+  const first = tabs.find(t=>t.classList.contains("active")) || tabs[0];
+  if(first) first.click();
+}
+
+function downloadText(filename, text){
+  const blob = new Blob([text], {type:"text/plain;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+}
+function downloadCSV(filename, rows){
+  const csv = rows.map(r=> r.map(v=>{
+    const s = String(v ?? "");
+    const needs = /[",\n\r]/.test(s);
+    return needs ? `"${s.replaceAll('"','""')}"` : s;
+  }).join(",")).join("\r\n");
+  downloadText(filename, "\ufeff"+csv);
+}
+function parseCSV(text){
+  const rows = [];
+  let i=0, cur="", row=[], inQ=false;
+  while(i < text.length){
+    const ch = text[i];
+    if(inQ){
+      if(ch === '"'){
+        if(text[i+1] === '"'){ cur+='"'; i+=2; continue; }
+        inQ=false; i++; continue;
+      }else{ cur+=ch; i++; continue; }
+    }else{
+      if(ch === '"'){ inQ=true; i++; continue; }
+      if(ch === ','){ row.push(cur); cur=""; i++; continue; }
+      if(ch === '\n'){
+        row.push(cur); cur="";
+        rows.push(row); row=[];
+        i++; continue;
+      }
+      if(ch === '\r'){ i++; continue; }
+      cur+=ch; i++; continue;
+    }
+  }
+  row.push(cur);
+  if(row.length>1 || row[0]!=="" ) rows.push(row);
+  return rows;
+}
+
+function weekdayAr(dateStr){
+  const d = new Date(dateStr+"T00:00:00");
+  const names = ["الأحد","الإثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
+  return names[d.getDay()];
+}
+
+function getMonthSetting(db, ym){
+  return db.monthSettings?.[ym] || null;
+}
+function inferDaysInMonth(ym){
+  const [y,m] = ym.split("-").map(Number);
+  return new Date(y, m, 0).getDate();
+}
+
+function computeDerived(db, dateStr, empId, checkIn, checkOut, excuseType){
+  const ym = ymFromDateStr(dateStr);
+  const ms = getMonthSetting(db, ym);
+  if(!ms) return {lateMinutes:0, earlyLeaveMinutes:0, overtimeMinutes:0, warn:"لا توجد إعدادات لهذا الشهر"};
+  const shiftStartM = hmToMinutes(ms.shiftStart);
+  const shiftEndM = hmToMinutes(ms.shiftEnd);
+  const inM = hmToMinutes(checkIn);
+  const outM = hmToMinutes(checkOut);
+
+  let late=0, early=0, ot=0;
+  if(inM != null && shiftStartM != null){
+    const grace = Number(ms.lateGraceMinutes||0);
+    late = Math.max(0, inM - (shiftStartM + grace));
+  }
+  if(outM != null && shiftEndM != null){
+    const graceE = Number(ms.earlyLeaveGraceMinutes||0);
+    early = Math.max(0, (shiftEndM - graceE) - outM);
+    ot = Math.max(0, outM - shiftEndM);
+  }
+  if(excuseType === "late_excused") late = 0;
+  if(excuseType === "early_excused") early = 0;
+  if(excuseType === "absent_excused"){ late=0; early=0; ot=0; }
+  return {lateMinutes:Math.round(late), earlyLeaveMinutes:Math.round(early), overtimeMinutes:Math.round(ot), warn:null};
+}
+
+function getAttendanceRecord(db, dateStr, empId){
+  return db.attendance?.[dateStr]?.[empId] || null;
+}
+function setAttendanceRecord(db, dateStr, empId, rec){
+  if(!db.attendance[dateStr]) db.attendance[dateStr] = {};
+  db.attendance[dateStr][empId] = rec;
+}
+function deleteAttendanceRecord(db, dateStr, empId){
+  if(db.attendance?.[dateStr]?.[empId]) delete db.attendance[dateStr][empId];
+  if(db.attendance?.[dateStr] && Object.keys(db.attendance[dateStr]).length===0) delete db.attendance[dateStr];
+}
+
+function getAdvance(db, ym, empId){
+  return db.advances?.[ym]?.[empId] || {amount:0,note:""};
+}
+function setAdvance(db, ym, empId, obj){
+  if(!db.advances[ym]) db.advances[ym] = {};
+  db.advances[ym][empId] = {amount:Number(obj.amount||0), note:String(obj.note||"")};
+}
+
+function calcPayrollForEmployee(db, ym, emp){
+  const ms = getMonthSetting(db, ym);
+  const days = ms?.daysInMonth ? Number(ms.daysInMonth) : inferDaysInMonth(ym);
+  const workHours = Number(ms?.workHoursInMonth||0);
+  const hourValue = workHours>0 ? (Number(emp.monthlySalary||0)/workHours) : 0;
+
+  const multipliers = {
+    late: Number(ms?.latePenaltyMultiplier || 1.5),
+    early: Number(ms?.earlyPenaltyMultiplier || 1.0),
+    ot: Number(ms?.overtimeMultiplier || 1.0),
+  };
+
+  let totalLateMin=0, totalEarlyMin=0, totalOtMin=0;
+  for(let d=1; d<=days; d++){
+    const dateStr = `${ym}-${pad2(d)}`;
+    const r = getAttendanceRecord(db, dateStr, emp.id);
+    if(r){
+      totalLateMin += Number(r.lateMinutes||0);
+      totalEarlyMin += Number(r.earlyLeaveMinutes||0);
+      totalOtMin += Number(r.overtimeMinutes||0);
+    }
+  }
+
+  const lateDeduction = (totalLateMin/60)*hourValue*multipliers.late;
+  const earlyDeduction = (totalEarlyMin/60)*hourValue*multipliers.early;
+  const otValue = (totalOtMin/60)*hourValue*multipliers.ot;
+
+  const adv = getAdvance(db, ym, emp.id);
+  const advances = Number(adv.amount||0);
+
+  const net = Number(emp.monthlySalary||0) + otValue - lateDeduction - earlyDeduction - advances;
+
+  return {
+    ym, days, workHours, hourValue,
+    totalLateMin, totalEarlyMin, totalOtMin,
+    lateDeduction, earlyDeduction, otValue,
+    advances, net, multipliers
+  };
+}
+
+function openPayslipPrintWindow(db, ym, emp){
+  const dep = db.departments.find(d=>d.id===emp.departmentId);
+  const depName = dep ? dep.name : "—";
+  const ms = getMonthSetting(db, ym);
+  const days = ms?.daysInMonth ? Number(ms.daysInMonth) : inferDaysInMonth(ym);
+  const logo = db.company.companyLogo || "";
+  const company = db.company.companyName || "—";
+
+  const pay = calcPayrollForEmployee(db, ym, emp);
+
+  const rows = [];
+  for(let d=1; d<=days; d++){
+    const dateStr = `${ym}-${pad2(d)}`;
+    const r = getAttendanceRecord(db, dateStr, emp.id);
+    if(r){
+      rows.push(`
+        <tr>
+          <td>${escapeHtml(dateStr)}</td>
+          <td>${escapeHtml(weekdayAr(dateStr))}</td>
+          <td>${escapeHtml(r.checkIn||"")}</td>
+          <td>${escapeHtml(r.checkOut||"")}</td>
+          <td>${escapeHtml(minutesToHM(r.overtimeMinutes||0))}</td>
+          <td>${escapeHtml(minutesToHM(r.lateMinutes||0))}</td>
+          <td>${escapeHtml(minutesToHM(r.earlyLeaveMinutes||0))}</td>
+        </tr>
+      `);
+    }
+  }
+
+  const html = `
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>صك قبض - ${escapeHtml(emp.name)}</title>
+<style>
+  body{font-family:Tahoma,Arial,sans-serif;margin:0;background:#fff;color:#111}
+  .page{padding:24px 28px}
+  .top{display:flex;align-items:center;justify-content:space-between;gap:16px;border-bottom:2px solid #111;padding-bottom:14px}
+  .logo{width:60px;height:60px;border:1px solid #ddd;border-radius:12px;overflow:hidden;display:grid;place-items:center}
+  .logo img{width:100%;height:100%;object-fit:cover}
+  h1{margin:0;font-size:20px}
+  .meta{margin-top:8px;color:#333;font-size:13px;line-height:1.7}
+  table{width:100%;border-collapse:collapse;margin-top:14px}
+  th,td{border:1px solid #ddd;padding:8px;font-size:12px;text-align:right}
+  th{background:#f3f4f6}
+  .sum{margin-top:14px;border:1px solid #ddd;border-radius:10px;padding:12px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .line{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px dashed #e5e7eb}
+  .line:last-child{border-bottom:0}
+  .sig{display:flex;justify-content:space-between;margin-top:26px}
+  .sig .box{width:46%;border-top:1px solid #111;padding-top:10px;text-align:center;font-size:13px}
+  @media print{ .noPrint{display:none} .page{padding:14mm} }
+</style>
+</head>
+<body>
+  <div class="page">
+    <div class="top">
+      <div class="logo">${logo?`<img src="${logo}" alt="شعار">`:""}</div>
+      <div style="flex:1">
+        <h1>${escapeHtml(company)} — صك قبض راتب</h1>
+        <div class="meta">
+          <div><b>الموظف:</b> ${escapeHtml(emp.name)} — <b>القسم:</b> ${escapeHtml(depName)}</div>
+          <div><b>الشهر:</b> ${escapeHtml(ym)}</div>
+        </div>
+      </div>
+      <button class="noPrint" onclick="window.print()" style="padding:10px 14px;border:1px solid #111;background:#111;color:#fff;border-radius:10px;cursor:pointer">طباعة / حفظ PDF</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>التاريخ</th>
+          <th>اليوم</th>
+          <th>الدخول</th>
+          <th>الخروج</th>
+          <th>الإضافي</th>
+          <th>التأخير</th>
+          <th>الانصراف المبكر</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows.join("") || `<tr><td colspan="7" style="text-align:center;color:#666">لا توجد سجلات لهذا الشهر</td></tr>`}
+      </tbody>
+    </table>
+
+    <div class="sum">
+      <div class="grid">
+        <div class="line"><span>مجموع الإضافي</span><b>${minutesToHM(pay.totalOtMin)} — ${fmtMoney(pay.otValue)}</b></div>
+        <div class="line"><span>مجموع التأخير</span><b>${minutesToHM(pay.totalLateMin)} — ${fmtMoney(pay.lateDeduction)}</b></div>
+        <div class="line"><span>مجموع الانصراف المبكر</span><b>${minutesToHM(pay.totalEarlyMin)} — ${fmtMoney(pay.earlyDeduction)}</b></div>
+        <div class="line"><span>السلف</span><b>${fmtMoney(pay.advances)}</b></div>
+        <div class="line" style="grid-column:1/-1;border-top:1px solid #e5e7eb;padding-top:10px">
+          <span><b>المستحق النهائي</b></span><b style="font-size:16px">${fmtMoney(pay.net)}</b>
+        </div>
+      </div>
+    </div>
+
+    <div class="sig">
+      <div class="box">توقيع الموظف</div>
+      <div class="box">توقيع الإدارة</div>
+    </div>
+  </div>
+</body>
+</html>
+  `.trim();
+
+  const w = window.open("", "_blank");
+  w.document.open();
+  w.document.write(html);
+  w.document.close();
+}
+
+function ensureSeedData(db){
+  if(db.departments.length===0 && db.employees.length===0 && db.managers.length===0 && !db.company.companyName){
+    db.company.companyName = "شركة تجريبية";
+    const depId = uid("dep");
+    db.departments.push({id:depId, name:"إدارة"});
+    db.employees.push({id:uid("emp"), name:"موظف تجريبي", departmentId:depId, monthlySalary:3000, active:true, notes:""});
+    const ym = nowISODate().slice(0,7);
+    db.monthSettings[ym] = {
+      daysInMonth: inferDaysInMonth(ym),
+      workHoursInMonth: 240,
+      shiftStart:"09:00",
+      shiftEnd:"17:00",
+      lateGraceMinutes:10,
+      earlyLeaveGraceMinutes:10,
+      latePenaltyMultiplier:1.5,
+      earlyPenaltyMultiplier:1.0,
+      overtimeMultiplier:1.25
+    };
+    saveDB(db);
+  }
+}
+</script>
+<script>
+(function(){
+  requireAuth(["admin"]);
+  const db = loadDB();
+  setBrand(db, "Admin");
+  wireTabs();
+
+  // Defaults
+  document.getElementById("attDate").value = nowISODate();
+  document.getElementById("attListDate").value = nowISODate();
+  document.getElementById("msYm").value = nowISODate().slice(0,7);
+  document.getElementById("advYm").value = nowISODate().slice(0,7);
+  document.getElementById("payYm").value = nowISODate().slice(0,7);
+
+  document.getElementById("logoutBtn").onclick = ()=>{ clearSession(); location.href="index.html"; };
+
+  // Company
+  const companyName = document.getElementById("companyName");
+  companyName.value = db.company.companyName || "";
+  updateStats();
+
+  document.getElementById("saveCompanyBtn").onclick = async ()=>{
+    db.company.companyName = companyName.value.trim();
+    const file = document.getElementById("companyLogoFile").files[0];
+    if(file){
+      const b64 = await fileToDataURL(file);
+      db.company.companyLogo = b64;
+    }
+    saveDB(db);
+    setBrand(db, "Admin");
+    toast("ok","تم الحفظ","تم حفظ بيانات الشركة.");
+    updateStats();
+  };
+  document.getElementById("clearLogoBtn").onclick = ()=>{
+    db.company.companyLogo = "";
+    saveDB(db);
+    setBrand(db, "Admin");
+    toast("ok","تم","تم حذف الشعار.");
+  };
+
+  async function fileToDataURL(file){
+    return await new Promise((res,rej)=>{
+      const r = new FileReader();
+      r.onload = ()=>res(String(r.result));
+      r.onerror = rej;
+      r.readAsDataURL(file);
+    });
+  }
+
+  function updateStats(){
+    const statsTxt = document.getElementById("statsTxt");
+    const months = Object.keys(db.monthSettings||{}).length;
+    const attDays = Object.keys(db.attendance||{}).length;
+    statsTxt.textContent = `${db.employees.length} موظف — ${db.departments.length} قسم — ${db.managers.length} مدير — ${months} إعداد شهر — ${attDays} يوم حضور`;
+  }
+
+  // Departments
+  document.getElementById("addDepBtn").onclick = ()=>{
+    const name = document.getElementById("depName").value.trim();
+    if(!name){ toast("err","أدخل اسم القسم",""); return; }
+    if(db.departments.some(d=>d.name===name)){ toast("err","القسم موجود",""); return; }
+    db.departments.push({id:uid("dep"), name});
+    saveDB(db);
+    document.getElementById("depName").value="";
+    renderDeps();
+    renderEmpDepOptions();
+    updateStats();
+    toast("ok","تم","تمت إضافة القسم.");
+  };
+  document.getElementById("depSearch").oninput = renderDeps;
+
+  function renderDeps(){
+    const q = document.getElementById("depSearch").value.trim();
+    const tbody = document.getElementById("depTbody");
+    tbody.innerHTML = "";
+    db.departments
+      .filter(d=> !q || d.name.includes(q))
+      .sort((a,b)=>a.name.localeCompare(b.name,'ar'))
+      .forEach(d=>{
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${escapeHtml(d.name)}</td>
+          <td>
+            <button class="btn small" data-edit>تعديل</button>
+            <button class="btn small danger" data-del>حذف</button>
+          </td>
+        `;
+        tr.querySelector("[data-edit]").onclick = ()=>{
+          const nn = prompt("اسم القسم الجديد:", d.name);
+          if(!nn) return;
+          const name = nn.trim();
+          if(!name) return;
+          if(db.departments.some(x=>x.name===name && x.id!==d.id)){ toast("err","اسم مكرر",""); return; }
+          d.name = name;
+          saveDB(db);
+          renderDeps(); renderEmpDepOptions(); renderEmployees(); renderPayroll();
+          toast("ok","تم","تم تعديل القسم.");
+        };
+        tr.querySelector("[data-del]").onclick = ()=>{
+          const used = db.employees.some(e=>e.departmentId===d.id);
+          if(used){ toast("err","لا يمكن الحذف","هناك موظفون مرتبطون بهذا القسم."); return; }
+          if(!confirm("حذف القسم؟")) return;
+          db.departments = db.departments.filter(x=>x.id!==d.id);
+          saveDB(db);
+          renderDeps(); renderEmpDepOptions();
+          updateStats();
+          toast("ok","تم","تم حذف القسم.");
+        };
+        tbody.appendChild(tr);
+      });
+  }
+
+  // Employees
+  function renderEmpDepOptions(){
+    const sel = document.getElementById("empDep");
+    sel.innerHTML = "";
+    db.departments
+      .sort((a,b)=>a.name.localeCompare(b.name,'ar'))
+      .forEach(d=>{
+        const o = document.createElement("option");
+        o.value = d.id; o.textContent = d.name;
+        sel.appendChild(o);
+      });
+    if(db.departments.length===0){
+      const o = document.createElement("option");
+      o.value=""; o.textContent="— أضف قسم أولاً —";
+      sel.appendChild(o);
+    }
+  }
+
+  document.getElementById("addEmpBtn").onclick = ()=>{
+    const name = document.getElementById("empNameIn").value.trim();
+    const depId = document.getElementById("empDep").value;
+    const salary = Number(document.getElementById("empSalary").value||0);
+    const notes = document.getElementById("empNote").value.trim();
+    if(!name){ toast("err","أدخل اسم الموظف",""); return; }
+    if(!depId){ toast("err","اختر قسم",""); return; }
+    if(salary<=0){ toast("err","راتب غير صحيح",""); return; }
+    const editId = document.getElementById("empEditId").value;
+
+    if(editId){
+      const emp = db.employees.find(e=>e.id===editId);
+      if(!emp){ toast("err","غير موجود",""); return; }
+      if(db.employees.some(e=>e.name===name && e.id!==editId)){ toast("err","اسم مكرر",""); return; }
+      emp.name=name; emp.departmentId=depId; emp.monthlySalary=salary; emp.notes=notes;
+      saveDB(db);
+      resetEmpForm();
+      renderEmployees(); renderAttendanceSelectors(); renderPayroll();
+      updateStats();
+      toast("ok","تم","تم تعديل الموظف.");
+    }else{
+      if(db.employees.some(e=>e.name===name)){ toast("err","اسم مكرر",""); return; }
+      db.employees.push({id:uid("emp"), name, departmentId:depId, monthlySalary:salary, active:true, notes});
+      saveDB(db);
+      resetEmpForm();
+      renderEmployees(); renderAttendanceSelectors(); renderPayroll();
+      updateStats();
+      toast("ok","تم","تمت إضافة الموظف.");
+    }
+  };
+  document.getElementById("resetEmpFormBtn").onclick = resetEmpForm;
+  document.getElementById("empSearch").oninput = renderEmployees;
+
+  function resetEmpForm(){
+    document.getElementById("empNameIn").value="";
+    document.getElementById("empSalary").value="";
+    document.getElementById("empNote").value="";
+    document.getElementById("empEditId").value="";
+  }
+
+  function depNameById(id){
+    const d = db.departments.find(x=>x.id===id);
+    return d?d.name:"—";
+  }
+
+  function renderEmployees(){
+    const q = document.getElementById("empSearch").value.trim();
+    const tbody = document.getElementById("empTbody");
+    tbody.innerHTML = "";
+    db.employees
+      .filter(e=> !q || e.name.includes(q))
+      .sort((a,b)=>a.name.localeCompare(b.name,'ar'))
+      .forEach(e=>{
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${escapeHtml(e.name)}</td>
+          <td>${escapeHtml(depNameById(e.departmentId))}</td>
+          <td>${fmtMoney(e.monthlySalary)}</td>
+          <td>${e.active===false ? "لا" : "نعم"}</td>
+          <td>
+            <button class="btn small" data-edit>تعديل</button>
+            <button class="btn small" data-toggle>${e.active===false?"تفعيل":"تعطيل"}</button>
+            <button class="btn small danger" data-del>حذف</button>
+          </td>
+        `;
+        tr.querySelector("[data-edit]").onclick = ()=>{
+          document.getElementById("empNameIn").value = e.name;
+          document.getElementById("empDep").value = e.departmentId;
+          document.getElementById("empSalary").value = e.monthlySalary;
+          document.getElementById("empNote").value = e.notes||"";
+          document.getElementById("empEditId").value = e.id;
+          toast("ok","وضع التعديل","عدّل ثم اضغط حفظ الموظف.");
+        };
+        tr.querySelector("[data-toggle]").onclick = ()=>{
+          e.active = (e.active===false) ? true : false;
+          saveDB(db);
+          renderEmployees(); renderAttendanceSelectors(); renderPayroll();
+          toast("ok","تم","تم تحديث حالة الموظف.");
+        };
+        tr.querySelector("[data-del]").onclick = ()=>{
+          if(!confirm("حذف الموظف؟ سيتم حذف بياناته (ولا يتم مسح سجلات الدوام القديمة تلقائيًا).")) return;
+          db.employees = db.employees.filter(x=>x.id!==e.id);
+          saveDB(db);
+          renderEmployees(); renderAttendanceSelectors(); renderPayroll();
+          updateStats();
+          toast("ok","تم","تم حذف الموظف.");
+        };
+        tbody.appendChild(tr);
+      });
+  }
+
+  // Managers
+  document.getElementById("addManagerBtn").onclick = ()=>{
+    const u = document.getElementById("mUser").value.trim();
+    const p = document.getElementById("mPass").value;
+    if(!u || !p){ toast("err","أدخل البيانات",""); return; }
+    if(db.managers.some(m=>m.username===u)){ toast("err","اسم مستخدم مكرر",""); return; }
+    db.managers.push({id:uid("mgr"), username:u, password:p});
+    saveDB(db);
+    document.getElementById("mUser").value="";
+    document.getElementById("mPass").value="";
+    renderManagers();
+    updateStats();
+    toast("ok","تم","تمت إضافة مدير.");
+  };
+  document.getElementById("mSearch").oninput = renderManagers;
+
+  function renderManagers(){
+    const q = document.getElementById("mSearch").value.trim();
+    const tbody = document.getElementById("mTbody");
+    tbody.innerHTML = "";
+    db.managers
+      .filter(m=>!q || m.username.includes(q))
+      .sort((a,b)=>a.username.localeCompare(b.username))
+      .forEach(m=>{
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${escapeHtml(m.username)}</td>
+          <td>
+            <button class="btn small" data-reset>تغيير كلمة السر</button>
+            <button class="btn small danger" data-del>حذف</button>
+          </td>
+        `;
+        tr.querySelector("[data-reset]").onclick = ()=>{
+          const np = prompt("كلمة سر جديدة:", "");
+          if(!np) return;
+          m.password = np;
+          saveDB(db);
+          toast("ok","تم","تم تغيير كلمة السر.");
+        };
+        tr.querySelector("[data-del]").onclick = ()=>{
+          if(!confirm("حذف المدير؟")) return;
+          db.managers = db.managers.filter(x=>x.id!==m.id);
+          saveDB(db);
+          renderManagers();
+          updateStats();
+          toast("ok","تم","تم حذف المدير.");
+        };
+        tbody.appendChild(tr);
+      });
+  }
+
+  // Month settings
+  const msYm = document.getElementById("msYm");
+  msYm.addEventListener("change", loadMonthForm);
+  document.getElementById("saveMonthBtn").onclick = ()=>{
+    const ym = msYm.value;
+    if(!ym){ toast("err","اختر شهر",""); return; }
+    db.monthSettings[ym] = {
+      daysInMonth: Number(document.getElementById("msDays").value),
+      workHoursInMonth: Number(document.getElementById("msWorkHours").value||0),
+      shiftStart: document.getElementById("msStart").value || "09:00",
+      shiftEnd: document.getElementById("msEnd").value || "17:00",
+      lateGraceMinutes: Number(document.getElementById("msLateGrace").value||0),
+      earlyLeaveGraceMinutes: Number(document.getElementById("msEarlyGrace").value||0),
+      latePenaltyMultiplier: Number(document.getElementById("msLateMul").value||1.5),
+      earlyPenaltyMultiplier: Number(document.getElementById("msEarlyMul").value||1.0),
+      overtimeMultiplier: Number(document.getElementById("msOtMul").value||1.0),
+    };
+    saveDB(db);
+    toast("ok","تم الحفظ","تم حفظ إعدادات الشهر.");
+    updateStats();
+    renderPayroll();
+    updateAttendanceCalcPreview();
+  };
+  document.getElementById("deleteMonthBtn").onclick = ()=>{
+    const ym = msYm.value;
+    if(!ym) return;
+    if(!confirm("حذف إعدادات هذا الشهر؟")) return;
+    delete db.monthSettings[ym];
+    saveDB(db);
+    toast("ok","تم","تم حذف إعدادات الشهر.");
+    updateStats();
+    loadMonthForm();
+    renderPayroll();
+  };
+
+  function loadMonthForm(){
+    const ym = msYm.value;
+    const ms = db.monthSettings[ym];
+    if(ms){
+      document.getElementById("msDays").value = String(ms.daysInMonth||inferDaysInMonth(ym));
+      document.getElementById("msWorkHours").value = ms.workHoursInMonth||"";
+      document.getElementById("msStart").value = ms.shiftStart||"09:00";
+      document.getElementById("msEnd").value = ms.shiftEnd||"17:00";
+      document.getElementById("msLateGrace").value = ms.lateGraceMinutes||0;
+      document.getElementById("msEarlyGrace").value = ms.earlyLeaveGraceMinutes||0;
+      document.getElementById("msLateMul").value = ms.latePenaltyMultiplier||1.5;
+      document.getElementById("msEarlyMul").value = ms.earlyPenaltyMultiplier||1.0;
+      document.getElementById("msOtMul").value = ms.overtimeMultiplier||1.0;
+    }else{
+      document.getElementById("msDays").value = String(inferDaysInMonth(ym));
+      document.getElementById("msWorkHours").value = "";
+      document.getElementById("msStart").value = "09:00";
+      document.getElementById("msEnd").value = "17:00";
+      document.getElementById("msLateGrace").value = 10;
+      document.getElementById("msEarlyGrace").value = 10;
+      document.getElementById("msLateMul").value = 1.5;
+      document.getElementById("msEarlyMul").value = 1.0;
+      document.getElementById("msOtMul").value = 1.25;
+    }
+  }
+
+  // Attendance
+  const attEmp = document.getElementById("attEmp");
+  const advEmp = document.getElementById("advEmp");
+  const attListDate = document.getElementById("attListDate");
+  const attListSearch = document.getElementById("attListSearch");
+  const attDate = document.getElementById("attDate");
+  const attIn = document.getElementById("attIn");
+  const attOut = document.getElementById("attOut");
+  const attExcuse = document.getElementById("attExcuse");
+  const attOutFactory = document.getElementById("attOutFactory");
+  const attNote = document.getElementById("attNote");
+
+  [attDate, attEmp, attIn, attOut, attExcuse].forEach(el=> el.addEventListener("input", updateAttendanceCalcPreview));
+  attEmp.addEventListener("change", loadAttendanceForm);
+  attDate.addEventListener("change", loadAttendanceForm);
+
+  document.getElementById("saveAttBtn").onclick = ()=>{
+    const empId = attEmp.value;
+    const dateStr = attDate.value;
+    if(!empId || !dateStr){ toast("err","أكمل البيانات","اختر موظف وتاريخ."); return; }
+
+    const emp = db.employees.find(e=>e.id===empId);
+    if(!emp){ toast("err","الموظف غير موجود",""); return; }
+
+    const excuseType = attExcuse.value;
+    const checkIn = attIn.value || "";
+    const checkOut = attOut.value || "";
+    const outOfFactory = (attOutFactory.value === "true");
+    const note = attNote.value.trim();
+
+    const derived = computeDerived(db, dateStr, empId, checkIn, checkOut, excuseType);
+    if(derived.warn) toast("err","تنبيه", derived.warn);
+
+    const rec = {
+      date: dateStr,
+      employeeId: empId,
+      checkIn: excuseType==="absent_excused" ? "" : checkIn,
+      checkOut: excuseType==="absent_excused" ? "" : checkOut,
+      overtimeMinutes: derived.overtimeMinutes||0,
+      lateMinutes: derived.lateMinutes||0,
+      earlyLeaveMinutes: derived.earlyLeaveMinutes||0,
+      excuseType,
+      outOfFactory,
+      note
+    };
+
+    setAttendanceRecord(db, dateStr, empId, rec);
+    saveDB(db);
+    toast("ok","تم","تم حفظ سجل الدوام.");
+    renderAttendanceDay();
+    renderPayroll();
+    updateStats();
+  };
+
+  document.getElementById("delAttBtn").onclick = ()=>{
+    const empId = attEmp.value;
+    const dateStr = attDate.value;
+    if(!empId || !dateStr){ toast("err","اختر موظف وتاريخ",""); return; }
+    if(!confirm("حذف سجل هذا اليوم للموظف؟")) return;
+    deleteAttendanceRecord(db, dateStr, empId);
+    saveDB(db);
+    toast("ok","تم","تم حذف السجل.");
+    loadAttendanceForm();
+    renderAttendanceDay();
+    renderPayroll();
+    updateStats();
+  };
+
+  function renderAttendanceSelectors(){
+    const emps = db.employees.filter(e=>e.active!==false).sort((a,b)=>a.name.localeCompare(b.name,'ar'));
+    attEmp.innerHTML = "";
+    advEmp.innerHTML = "";
+    emps.forEach(e=>{
+      const o1 = document.createElement("option"); o1.value=e.id; o1.textContent=e.name;
+      const o2 = document.createElement("option"); o2.value=e.id; o2.textContent=e.name;
+      attEmp.appendChild(o1); advEmp.appendChild(o2);
+    });
+    if(emps.length===0){
+      const o = document.createElement("option"); o.value=""; o.textContent="— لا يوجد موظفون —";
+      attEmp.appendChild(o);
+      advEmp.appendChild(o.cloneNode(true));
+    }
+  }
+
+  function loadAttendanceForm(){
+    const empId = attEmp.value;
+    const dateStr = attDate.value;
+    const rec = empId && dateStr ? getAttendanceRecord(db, dateStr, empId) : null;
+    if(rec){
+      attIn.value = rec.checkIn || "";
+      attOut.value = rec.checkOut || "";
+      attExcuse.value = rec.excuseType || "none";
+      attOutFactory.value = rec.outOfFactory ? "true":"false";
+      attNote.value = rec.note || "";
+    }else{
+      attIn.value = "";
+      attOut.value = "";
+      attExcuse.value = "none";
+      attOutFactory.value = "false";
+      attNote.value = "";
+    }
+    updateAttendanceCalcPreview();
+  }
+
+  function updateAttendanceCalcPreview(){
+    const empId = attEmp.value;
+    const dateStr = attDate.value;
+    if(!empId || !dateStr){ document.getElementById("attCalcTxt").textContent = "—"; return; }
+    const d = computeDerived(db, dateStr, empId, attIn.value, attOut.value, attExcuse.value);
+    let txt = `تأخير: ${minutesToHM(d.lateMinutes)} — مبكر: ${minutesToHM(d.earlyLeaveMinutes)} — إضافي: ${minutesToHM(d.overtimeMinutes)}`;
+    if(d.warn) txt += ` — (${d.warn})`;
+    document.getElementById("attCalcTxt").textContent = txt;
+  }
+
+  attListDate.addEventListener("change", renderAttendanceDay);
+  attListSearch.addEventListener("input", renderAttendanceDay);
+
+  function renderAttendanceDay(){
+    const dateStr = attListDate.value;
+    const q = attListSearch.value.trim();
+    const tbody = document.getElementById("attTbody");
+    tbody.innerHTML = "";
+
+    const map = db.attendance?.[dateStr] || {};
+    const rows = Object.values(map);
+    const empsById = Object.fromEntries(db.employees.map(e=>[e.id,e]));
+    rows
+      .filter(r=>{
+        const nm = empsById[r.employeeId]?.name || "";
+        return !q || nm.includes(q);
+      })
+      .sort((a,b)=> (empsById[a.employeeId]?.name||"").localeCompare((empsById[b.employeeId]?.name||""),'ar'))
+      .forEach(r=>{
+        const nm = empsById[r.employeeId]?.name || "—";
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${escapeHtml(nm)}</td>
+          <td>${escapeHtml(r.checkIn||"")}</td>
+          <td>${escapeHtml(r.checkOut||"")}</td>
+          <td>${escapeHtml(minutesToHM(r.overtimeMinutes||0))}</td>
+          <td>${escapeHtml(minutesToHM(r.lateMinutes||0))}</td>
+          <td>${escapeHtml(minutesToHM(r.earlyLeaveMinutes||0))}</td>
+          <td>${escapeHtml(r.excuseType||"none")}</td>
+          <td>${r.outOfFactory ? "نعم":"لا"}</td>
+          <td>${escapeHtml(r.note||"")}</td>
+          <td><button class="btn small" data-open>فتح</button></td>
+        `;
+        tr.querySelector("[data-open]").onclick = ()=>{
+          attDate.value = r.date;
+          attEmp.value = r.employeeId;
+          loadAttendanceForm();
+          toast("ok","تم","تم تحميل السجل في نموذج التعديل.");
+          window.scrollTo({top:0,behavior:"smooth"});
+        };
+        tbody.appendChild(tr);
+      });
+
+    if(rows.length===0){
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td colspan="10" style="text-align:center;color:rgba(168,179,214,.9)">لا توجد سجلات لهذا اليوم</td>`;
+      tbody.appendChild(tr);
+    }
+  }
+
+  // Advances
+  const advYm = document.getElementById("advYm");
+  advYm.addEventListener("change", loadAdvanceForm);
+  advEmp.addEventListener("change", loadAdvanceForm);
+
+  document.getElementById("saveAdvBtn").onclick = ()=>{
+    const ym = advYm.value;
+    const empId = advEmp.value;
+    if(!ym || !empId){ toast("err","أكمل البيانات",""); return; }
+    setAdvance(db, ym, empId, {amount:document.getElementById("advAmount").value, note:document.getElementById("advNote").value});
+    saveDB(db);
+    toast("ok","تم","تم حفظ السلفة.");
+    renderPayroll();
+  };
+
+  function loadAdvanceForm(){
+    const ym = advYm.value;
+    const empId = advEmp.value;
+    const adv = (ym && empId) ? getAdvance(db, ym, empId) : {amount:0,note:""};
+    document.getElementById("advAmount").value = adv.amount||0;
+    document.getElementById("advNote").value = adv.note||"";
+  }
+
+  // Payroll
+  document.getElementById("payYm").addEventListener("change", renderPayroll);
+  document.getElementById("paySearch").addEventListener("input", renderPayroll);
+
+  document.getElementById("exportPayrollBtn").onclick = ()=>{
+    const ym = document.getElementById("payYm").value;
+    if(!ym){ toast("err","اختر شهر",""); return; }
+    const rows = buildPayrollRows(ym, "");
+    const header = ["اسم الموظف","القسم","الراتب","إجمالي الإضافي (ساعات)","قيمة الإضافي","إجمالي التأخير (ساعات)","خصم التأخير","إجمالي الانصراف المبكر (ساعات)","خصم الانصراف المبكر","السلف","المستحق"];
+    downloadCSV(`payroll_${ym}.csv`, [header, ...rows.map(r=>r.csv)]);
+    toast("ok","تم","تم تصدير التقرير.");
+  };
+
+  function buildPayrollRows(ym, q){
+    const depById = Object.fromEntries(db.departments.map(d=>[d.id,d.name]));
+    const emps = db.employees.filter(e=>e.active!==false).filter(e=>!q || e.name.includes(q));
+    return emps.sort((a,b)=>a.name.localeCompare(b.name,'ar')).map(emp=>{
+      const pay = calcPayrollForEmployee(db, ym, emp);
+      const lateH = pay.totalLateMin/60;
+      const earlyH = pay.totalEarlyMin/60;
+      const otH = pay.totalOtMin/60;
+      const dep = depById[emp.departmentId] || "—";
+      return {
+        emp, pay, dep,
+        csv: [
+          emp.name,
+          dep,
+          emp.monthlySalary,
+          otH.toFixed(2),
+          pay.otValue.toFixed(2),
+          lateH.toFixed(2),
+          pay.lateDeduction.toFixed(2),
+          earlyH.toFixed(2),
+          pay.earlyDeduction.toFixed(2),
+          pay.advances.toFixed(2),
+          pay.net.toFixed(2)
+        ]
+      };
+    });
+  }
+
+  function renderPayroll(){
+    const ym = document.getElementById("payYm").value;
+    const q = document.getElementById("paySearch").value.trim();
+    const tbody = document.getElementById("payTbody");
+    tbody.innerHTML = "";
+
+    if(!ym){
+      tbody.innerHTML = `<tr><td colspan="12" style="text-align:center;color:rgba(168,179,214,.9)">اختر شهر</td></tr>`;
+      return;
+    }
+
+    const rows = buildPayrollRows(ym, q);
+    if(rows.length===0){
+      tbody.innerHTML = `<tr><td colspan="12" style="text-align:center;color:rgba(168,179,214,.9)">لا توجد بيانات</td></tr>`;
+      return;
+    }
+
+    rows.forEach(({emp, pay, dep})=>{
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${escapeHtml(emp.name)}</td>
+        <td>${escapeHtml(dep)}</td>
+        <td>${fmtMoney(emp.monthlySalary)}</td>
+        <td>${(pay.totalOtMin/60).toFixed(2)}</td>
+        <td>${fmtMoney(pay.otValue)}</td>
+        <td>${(pay.totalLateMin/60).toFixed(2)}</td>
+        <td>${fmtMoney(pay.lateDeduction)}</td>
+        <td>${(pay.totalEarlyMin/60).toFixed(2)}</td>
+        <td>${fmtMoney(pay.earlyDeduction)}</td>
+        <td>${fmtMoney(pay.advances)}</td>
+        <td><b>${fmtMoney(pay.net)}</b></td>
+        <td>
+          <button class="btn small primary" data-slip>صك قبض</button>
+        </td>
+      `;
+      tr.querySelector("[data-slip]").onclick = ()=> openPayslipPrintWindow(db, ym, emp);
+      tbody.appendChild(tr);
+    });
+  }
+
+  // Templates + Backup
+  document.getElementById("tplEmployeesBtn").onclick = ()=>{
+    downloadCSV("employees_template.csv", [["الاسم","القسم","الراتب الشهري","ملاحظة"]]);
+  };
+  document.getElementById("tplAttendanceBtn").onclick = ()=>{
+    downloadCSV("attendance_template.csv", [["التاريخ","اسم الموظف","الدخول","الخروج","عذر","نوع العذر","مشوار خارج المصنع","ملاحظة"]]);
+  };
+
+  document.getElementById("backupBtn").onclick = ()=>{
+    const blob = JSON.stringify(db, null, 2);
+    downloadText(`backup_${nowISODate()}.json`, blob);
+    toast("ok","تم","تم تنزيل النسخة الاحتياطية.");
+  };
+
+  document.getElementById("impBackup").addEventListener("change", async (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    try{
+      const txt = await file.text();
+      const obj = JSON.parse(txt);
+      if(!obj || typeof obj !== "object") throw new Error("invalid");
+      localStorage.setItem(APP_KEY, JSON.stringify(obj));
+      toast("ok","تم","تمت استعادة النسخة. سيتم تحديث الصفحة.");
+      setTimeout(()=>location.reload(), 800);
+    }catch(err){
+      console.error(err);
+      toast("err","فشل","ملف JSON غير صالح.");
+    }
+  });
+
+  document.getElementById("impEmployees").addEventListener("change", async (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    try{
+      const txt = await file.text();
+      const rows = parseCSV(txt).filter(r=>r.some(x=>String(x).trim()!==""));
+      if(rows.length<2){ toast("err","ملف فارغ",""); return; }
+      const header = rows[0].map(h=>h.trim());
+      const idxName = header.indexOf("الاسم");
+      const idxDep = header.indexOf("القسم");
+      const idxSal = header.indexOf("الراتب الشهري");
+      const idxNote = header.indexOf("ملاحظة");
+      if(idxName<0 || idxDep<0 || idxSal<0){
+        toast("err","عناوين الأعمدة غير صحيحة","استخدم قالب الموظفين.");
+        return;
+      }
+
+      rows.slice(1).forEach(r=>{
+        const name = (r[idxName]||"").trim();
+        const depName = (r[idxDep]||"").trim();
+        const sal = Number((r[idxSal]||"0").toString().replace(/[^\d.]/g,"")) || 0;
+        const note = idxNote>=0 ? (r[idxNote]||"").trim() : "";
+        if(!name || !depName || sal<=0) return;
+
+        let dep = db.departments.find(d=>d.name===depName);
+        if(!dep){
+          dep = {id:uid("dep"), name:depName};
+          db.departments.push(dep);
+        }
+
+        let emp = db.employees.find(e=>e.name===name);
+        if(!emp){
+          emp = {id:uid("emp"), name, departmentId:dep.id, monthlySalary:sal, active:true, notes:note};
+          db.employees.push(emp);
+        }else{
+          emp.departmentId = dep.id;
+          emp.monthlySalary = sal;
+          emp.notes = note;
+          emp.active = true;
+        }
+      });
+
+      saveDB(db);
+      renderDeps(); renderEmpDepOptions(); renderEmployees(); renderAttendanceSelectors(); renderPayroll();
+      updateStats();
+      toast("ok","تم","تم استيراد الموظفين.");
+    }catch(err){
+      console.error(err);
+      toast("err","فشل","تعذر قراءة ملف CSV.");
+    }
+  });
+
+  document.getElementById("impAttendance").addEventListener("change", async (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    try{
+      const txt = await file.text();
+      const rows = parseCSV(txt).filter(r=>r.some(x=>String(x).trim()!==""));
+      if(rows.length<2){ toast("err","ملف فارغ",""); return; }
+      const header = rows[0].map(h=>h.trim());
+
+      const idxDate = header.indexOf("التاريخ");
+      const idxEmp = header.indexOf("اسم الموظف");
+      const idxIn = header.indexOf("الدخول");
+      const idxOut = header.indexOf("الخروج");
+      const idxExc = header.indexOf("عذر");
+      const idxExcType = header.indexOf("نوع العذر");
+      const idxOutFac = header.indexOf("مشوار خارج المصنع");
+      const idxNote = header.indexOf("ملاحظة");
+
+      if(idxDate<0 || idxEmp<0){
+        toast("err","عناوين الأعمدة غير صحيحة","استخدم قالب الدوام.");
+        return;
+      }
+
+      rows.slice(1).forEach(r=>{
+        const dateStr = (r[idxDate]||"").trim();
+        const empName = (r[idxEmp]||"").trim();
+        if(!dateStr || !empName) return;
+        const emp = db.employees.find(e=>e.name===empName);
+        if(!emp) return;
+
+        const checkIn = idxIn>=0 ? (r[idxIn]||"").trim() : "";
+        const checkOut = idxOut>=0 ? (r[idxOut]||"").trim() : "";
+        const excYes = idxExc>=0 ? (r[idxExc]||"").trim() : "";
+        const excTypeRaw = idxExcType>=0 ? (r[idxExcType]||"").trim() : "";
+        let excuseType = "none";
+        if(excYes==="نعم" || excYes==="yes" || excYes==="true"){
+          if(excTypeRaw.includes("تأخير")) excuseType = "late_excused";
+          else if(excTypeRaw.includes("انصراف")) excuseType = "early_excused";
+          else if(excTypeRaw.includes("غياب")) excuseType = "absent_excused";
+          else excuseType = "late_excused";
+        }
+        const outOfFactory = idxOutFac>=0 ? ((r[idxOutFac]||"").trim()==="نعم") : false;
+        const note = idxNote>=0 ? (r[idxNote]||"").trim() : "";
+
+        const derived = computeDerived(db, dateStr, emp.id, checkIn, checkOut, excuseType);
+        const rec = {
+          date: dateStr,
+          employeeId: emp.id,
+          checkIn: excuseType==="absent_excused" ? "" : checkIn,
+          checkOut: excuseType==="absent_excused" ? "" : checkOut,
+          overtimeMinutes: derived.overtimeMinutes||0,
+          lateMinutes: derived.lateMinutes||0,
+          earlyLeaveMinutes: derived.earlyLeaveMinutes||0,
+          excuseType,
+          outOfFactory,
+          note
+        };
+        setAttendanceRecord(db, dateStr, emp.id, rec);
+      });
+
+      saveDB(db);
+      renderAttendanceDay(); renderPayroll(); updateStats();
+      toast("ok","تم","تم استيراد الدوام (بالقدر المتوفر).");
+    }catch(err){
+      console.error(err);
+      toast("err","فشل","تعذر قراءة ملف CSV.");
+    }
+  });
+
+  // Init
+  renderDeps();
+  renderEmpDepOptions();
+  renderEmployees();
+  renderManagers();
+  renderAttendanceSelectors();
+  loadAttendanceForm();
+  renderAttendanceDay();
+  loadAdvanceForm();
+  loadMonthForm();
+  renderPayroll();
+
+})();
+</script>
+</body>
+</html>
